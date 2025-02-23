@@ -21,6 +21,13 @@ public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
         return characterEncodings;
     }
 
+    /**
+     * Recursively populate the characterEncodings map, by traversing the HuffTree with pre-order traversal.
+     *
+     * @param characterEncodings Map of character encodings to populate. Key is the character, value is the encoding in 0's and 1's
+     * @param root The root node of the HuffTree to start traversing from
+     * @param encoding The encoding string that is built one bit at a time as we traverse the tree. Should be empty string to start.
+     */
     private void makeCode(Map<Integer, String> characterEncodings, IHuffBaseNode root, String encoding) {
         if (root == null) {
             throw new NullPointerException("Null root node");
@@ -59,6 +66,13 @@ public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
         return BITS_PER_INT + writeHelper(out, huffTree.root());
     }
 
+    /**
+     * Recursively write the entire HuffTree as part of the compressed file's header.
+     *
+     * @param out BitOutputStream that represents the file we are writing the header to
+     * @param root The root node of the HuffTree
+     * @return The number of bits written for the HuffTree, to be included in the total header size
+     */
     private int writeHelper(BitOutputStream out, IHuffBaseNode root) {
         if (root.isLeaf()) {
             // For leaf nodes, we write a 1, followed by the ASCII value
@@ -182,9 +196,10 @@ public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
             // Parse the encoding as binary 0's and 1's into a regular decimal integer
             int encodingAsInteger = Integer.parseInt(encoding, 2);
             out.write(encoding.length(), encodingAsInteger);
-            //compressedSize += encoding.length();
         }
 
+        // Add the PSEUDO_EOF to the end of the compressed file, which we will use
+        // to know when to stop decompressing.
         String pseudoEofEncoding = characterEncodings.get(PSEUDO_EOF);
         int pseudoEofEncodingAsInteger = Integer.parseInt(pseudoEofEncoding, 2);
         out.write(pseudoEofEncoding.length(), pseudoEofEncodingAsInteger);
@@ -265,6 +280,10 @@ public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
         cc.countAll(stream);
         characterFrequency = cc.getTable();
 
+        // Normally we should use a PriorityQueue<IHuffBaseNode>, but there
+        // is a bug in the two node classes in how they implement the compareTo() method.
+        // Specifically they are only able to compareTo other instances of their own class.
+        // The HuffTree class has a more robust compareTo() method.
         PriorityQueue<HuffTree> queue = new PriorityQueue<>();
         for (Map.Entry<Integer, Integer> entry : characterFrequency.entrySet()) {
             Integer character = entry.getKey();
@@ -274,7 +293,10 @@ public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
             queue.add(t);
         }
 
-        // Add one more leaf for the PSEUDO_EOF
+        // Add one more leaf for the PSEUDO_EOF with a weight of 1
+        // per the specification.
+        // This will give the PSEUDO_EOF a unique encoding that will be
+        // used when we write the compressed file.
         queue.add(new HuffTree(PSEUDO_EOF, 1));
 
         HuffTree tempTree = null;

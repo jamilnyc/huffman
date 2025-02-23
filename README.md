@@ -13,3 +13,5 @@ JUnit tests are implemented with files `*Test.java`. These tests use JUnit v5.
 They can probably be adapted for JUnit v4, with a little tweaking of the `import` statements.
 
 The text of the `long-original.test.txt` was generated with [lipsum.com](https://www.lipsum.com/).
+
+A code coverage HTML report is available in `code-coverage-report/`.

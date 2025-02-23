@@ -21,6 +21,12 @@ class HuffTest {
 
     public static final String TEST_STRING = "teststring";
 
+    /**
+     * Helper method for creating the initial HuffTree and making basic assertions on its properties.
+     * Uses the TEST_STRING constant as the input stream.
+     *
+     * @return Huff object that is initialized with a valid HuffTree and Frequency counts
+     */
     private Huff getTestHuff() {
         InputStream ins = new ByteArrayInputStream(TEST_STRING.getBytes());
         Huff h = new Huff();
