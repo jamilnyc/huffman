@@ -210,6 +210,9 @@ class HuffTest {
 
         assertTrue(actualCompressedSize < originalFileSize, "Compression did not save space");
 
+        File compressedFile = new File(LONG_COMPRESSED_TEST_FILE);
+        assertTrue(compressedFile.exists(), "Compressed file did not exist");
+
         int actualUncompressedSize = h.uncompress(LONG_COMPRESSED_TEST_FILE, LONG_UNCOMPRESSED_TEST_FILE);
         File uncompressedFile = new File(LONG_UNCOMPRESSED_TEST_FILE);
         assertTrue(uncompressedFile.exists(), "Uncompressed file did not exist");
