@@ -1,0 +1,92 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ITreeMaker</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: ITreeMaker (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ITreeMaker</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;
+&nbsp;/**
+&nbsp; * Abstraction/interface to allow trees to be made in more
+&nbsp; * than one setting, and to export the treemaker as an object.
+&nbsp; * For example, a tree can be made from character-counts using
+&nbsp; * a priority queue. Alternatively, a tree could be made from
+&nbsp; * an input stream when unhuffing if the huff process stored the
+&nbsp; * tree in the file in some format.
+&nbsp; * &lt;P&gt;
+&nbsp; * Typically classes that implement this interface will supply
+&nbsp; * state to the class via a constuctor or some other method so
+&nbsp; * that makeRoot will work (since makeRoot has no parameters).
+&nbsp; *
+&nbsp; * @author Owen Astrachan, Eric Fouh
+&nbsp; */
+&nbsp;public interface ITreeMaker {
+&nbsp;    /**
+&nbsp;     * Return the  Huffman/coding tree.
+&nbsp;     * @return the Huffman tree
+&nbsp;     */
+&nbsp;    public HuffTree makeHuffTree(InputStream stream) throws IOException;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

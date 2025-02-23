@@ -1,0 +1,411 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Huff</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: Huff (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Huff</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    91.2%
+  </span>
+  <span class="absValue">
+    (31/34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.6%
+  </span>
+  <span class="absValue">
+    (102/109)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.PriorityQueue;
+&nbsp;
+&nbsp;public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
+&nbsp;{
+&nbsp;    private Map&lt;Integer, Integer&gt; characterFrequency;
+&nbsp;    private HuffTree huffTree;
+&nbsp;    Map&lt;Integer, String&gt; characterEncodings;
+&nbsp;
+<b class="fc">&nbsp;    public Huff() {</b>
+<b class="fc">&nbsp;        characterFrequency = new HashMap&lt;&gt;();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Map&lt;Integer, String&gt; makeTable() {
+<b class="fc">&nbsp;        characterEncodings = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        makeCode(characterEncodings, huffTree.root(), &quot;&quot;);</b>
+<b class="fc">&nbsp;        return characterEncodings;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void makeCode(Map&lt;Integer, String&gt; characterEncodings, IHuffBaseNode root, String encoding) {
+<b class="pc">&nbsp;        if (root == null) {</b>
+<b class="nc">&nbsp;            throw new NullPointerException(&quot;Null root node&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if (root.isLeaf()) {</b>
+&nbsp;            // Cast it to a leaf so we can get the character out
+<b class="fc">&nbsp;            HuffLeafNode leaf = (HuffLeafNode) root;</b>
+<b class="fc">&nbsp;            characterEncodings.put(leaf.element(), encoding);</b>
+&nbsp;        } else {
+&nbsp;            // Must be an internal node
+<b class="fc">&nbsp;            HuffInternalNode internalNode = (HuffInternalNode) root;</b>
+<b class="fc">&nbsp;            makeCode(characterEncodings, internalNode.left(), encoding + &quot;0&quot;);</b>
+<b class="fc">&nbsp;            makeCode(characterEncodings, internalNode.right(), encoding + &quot;1&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String getCode(int i) {
+<b class="fc">&nbsp;        return characterEncodings.get(i);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Map&lt;Integer, Integer&gt; showCounts() {
+<b class="fc">&nbsp;        return characterFrequency;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int headerSize() {
+<b class="fc">&nbsp;        return huffTree.size() + BITS_PER_INT;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int writeHeader(BitOutputStream out) {
+<b class="fc">&nbsp;        out.write(BITS_PER_INT, MAGIC_NUMBER);</b>
+<b class="fc">&nbsp;        return BITS_PER_INT + writeHelper(out, huffTree.root());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private int writeHelper(BitOutputStream out, IHuffBaseNode root) {
+<b class="fc">&nbsp;        if (root.isLeaf()) {</b>
+&nbsp;            // For leaf nodes, we write a 1, followed by the ASCII value
+&nbsp;            // with 9 bits
+<b class="fc">&nbsp;            out.write(1, 1);</b>
+<b class="fc">&nbsp;            out.write(BITS_PER_WORD + 1, ((HuffLeafNode)root).element());</b>
+<b class="fc">&nbsp;            return 1 + 1 + BITS_PER_WORD;</b>
+&nbsp;        } else {
+&nbsp;            // For internal nodes, we just write a 0
+<b class="fc">&nbsp;            out.write(1, 0);</b>
+&nbsp;
+&nbsp;            // Then recursively call the method on the children
+&nbsp;            // with pre-order traversal
+<b class="fc">&nbsp;            return 1 + writeHelper(out, ((HuffInternalNode) root).left())</b>
+<b class="fc">&nbsp;                    + writeHelper(out, ((HuffInternalNode) root).right());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public HuffTree readHeader(BitInputStream in) throws IOException {
+&nbsp;        // Read the first 32 bits and interpret them as an integer
+<b class="fc">&nbsp;       int magicNumber = in.read(BITS_PER_INT);</b>
+&nbsp;
+<b class="fc">&nbsp;       if (magicNumber != MAGIC_NUMBER) {</b>
+<b class="fc">&nbsp;           throw new IOException(&quot;Magic Number did not match. Expected: &quot; + MAGIC_NUMBER + &quot;, Actual: &quot; + magicNumber);</b>
+&nbsp;       }
+&nbsp;
+&nbsp;       // After reading past the first 32 bits, the tree starts
+<b class="fc">&nbsp;       huffTree = buildTreeFromHeader(in);</b>
+<b class="fc">&nbsp;       return huffTree;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private HuffTree buildTreeFromHeader(BitInputStream in) throws IOException {
+&nbsp;        // Leaves are 1, Internal nodes are 0
+<b class="fc">&nbsp;        int firstBit = in.read(1);</b>
+<b class="pc">&nbsp;        if (firstBit == -1) {</b>
+<b class="nc">&nbsp;            throw new IOException(&quot;Ran out of bits reading the header&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // We only care about the ordering of nodes/children
+&nbsp;        // We don&#39;t need the weight in this case, so it doesn&#39;t matter what it is
+<b class="fc">&nbsp;        int placeHolderWeight = -1;</b>
+&nbsp;
+<b class="fc">&nbsp;        boolean isLeaf = (firstBit == 1);</b>
+<b class="fc">&nbsp;        if (isLeaf) {</b>
+&nbsp;            // The next 9 bits are the ASCII representation of the character in the leaf
+<b class="fc">&nbsp;            int character = in.read(BITS_PER_WORD + 1);</b>
+<b class="fc">&nbsp;            return new HuffTree(character, placeHolderWeight);</b>
+&nbsp;        } else {
+&nbsp;            // Recursively build the left and right child, because this is an internal node
+&nbsp;            HuffTree left;
+&nbsp;            HuffTree right;
+&nbsp;
+<b class="fc">&nbsp;            left = buildTreeFromHeader(in);</b>
+<b class="fc">&nbsp;            right = buildTreeFromHeader(in);</b>
+&nbsp;
+<b class="fc">&nbsp;            return new HuffTree(left.root(), right.root(), placeHolderWeight);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int write(String inFile, String outFile, boolean force) {
+&nbsp;        // We need two input streams for the file
+&nbsp;        // One stream reads through the whole file to make the HuffTree
+&nbsp;        // The other input stream is used to read one character at a time and encode it
+&nbsp;
+<b class="fc">&nbsp;        BitInputStream treeStream = new BitInputStream(inFile);</b>
+<b class="fc">&nbsp;        BitInputStream inputStream = new BitInputStream(inFile);</b>
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            makeHuffTree(treeStream);</b>
+<b class="fc">&nbsp;            makeTable();</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            throw new RuntimeException(e);</b>
+&nbsp;        }
+&nbsp;        // Once the tree is built, we don&#39;t need this stream anymore
+&nbsp;        treeStream.close();
+&nbsp;
+<b class="fc">&nbsp;        int originalSize = 0;</b>
+<b class="fc">&nbsp;        int compressedSize = headerSize();</b>
+<b class="fc">&nbsp;        for (Integer character : characterFrequency.keySet()) {</b>
+<b class="fc">&nbsp;            int frequency = characterFrequency.get(character);</b>
+&nbsp;
+&nbsp;            // In the original file, each character is 8 bits long,
+&nbsp;            // and we multiply that by the number of instances of this character
+<b class="fc">&nbsp;            originalSize += frequency * BITS_PER_WORD;</b>
+&nbsp;
+&nbsp;            // In the compressed file, each character takes up space, equal to its encoding
+&nbsp;            // Likewise, we multiply this by the frequency of that character
+<b class="fc">&nbsp;            String encoding = characterEncodings.get(character);</b>
+<b class="fc">&nbsp;            compressedSize += frequency * encoding.length();</b>
+&nbsp;        }
+&nbsp;        // Remember that the compressed version ends in Pseudo EOF
+<b class="fc">&nbsp;        compressedSize += characterEncodings.get(PSEUDO_EOF).length();</b>
+&nbsp;
+<b class="fc">&nbsp;        if ((compressedSize &gt;= originalSize) &amp;&amp; !force) {</b>
+&nbsp;            // If compression actually doesn&#39;t save space, and we are not forcing
+&nbsp;            // there is nothing else to do.
+&nbsp;            inputStream.close();
+<b class="fc">&nbsp;            return compressedSize;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Start writing to the compressed file, with the header
+<b class="fc">&nbsp;        BitOutputStream out = new BitOutputStream(outFile);</b>
+<b class="fc">&nbsp;        writeHeader(out);</b>
+&nbsp;
+&nbsp;        while(true) {
+&nbsp;            int character;
+&nbsp;            try {
+<b class="fc">&nbsp;                character = inputStream.read(BITS_PER_WORD);</b>
+&nbsp;            } catch (IOException e) {
+<b class="nc">&nbsp;                throw new RuntimeException(e);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // Reached the end of the original file
+<b class="fc">&nbsp;            if (character == -1) {</b>
+&nbsp;                break;
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            String encoding = characterEncodings.get(character);</b>
+&nbsp;            // Parse the encoding as binary 0&#39;s and 1&#39;s into a regular decimal integer
+<b class="fc">&nbsp;            int encodingAsInteger = Integer.parseInt(encoding, 2);</b>
+<b class="fc">&nbsp;            out.write(encoding.length(), encodingAsInteger);</b>
+&nbsp;            //compressedSize += encoding.length();
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        String pseudoEofEncoding = characterEncodings.get(PSEUDO_EOF);</b>
+<b class="fc">&nbsp;        int pseudoEofEncodingAsInteger = Integer.parseInt(pseudoEofEncoding, 2);</b>
+<b class="fc">&nbsp;        out.write(pseudoEofEncoding.length(), pseudoEofEncodingAsInteger);</b>
+&nbsp;
+&nbsp;        inputStream.close();
+&nbsp;        out.close();
+<b class="fc">&nbsp;        return compressedSize;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int uncompress(String inFile, String outFile) {
+<b class="fc">&nbsp;        BitInputStream in  = new BitInputStream(inFile);</b>
+<b class="fc">&nbsp;        BitOutputStream out = new BitOutputStream(outFile);</b>
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            readHeader(in);</b>
+&nbsp;        } catch (IOException e) {
+<b class="fc">&nbsp;            throw new RuntimeException(e);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // After reading the header, the huffTree should be populated
+<b class="fc">&nbsp;        IHuffBaseNode nodePointer = huffTree.root();</b>
+<b class="fc">&nbsp;        int uncompressedSize = 0;</b>
+<b class="fc">&nbsp;        int nextBit = -1;</b>
+&nbsp;        while (true) {
+&nbsp;            try {
+<b class="fc">&nbsp;                nextBit = in.read(1);</b>
+&nbsp;            } catch (IOException e) {
+<b class="nc">&nbsp;                throw new RuntimeException(e);</b>
+&nbsp;            }
+&nbsp;
+<b class="pc">&nbsp;            if (nextBit == -1) {</b>
+<b class="nc">&nbsp;                throw new RuntimeException(&quot;Unexpected end of file while uncompressing&quot;);</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // At this point the header has already been processed, so we are now reading the encodings
+&nbsp;            // Each 0 we read goes left in the Huffman Tree
+&nbsp;            // Each 1 goes to the right
+&nbsp;            // If we reach a Leaf Node, we can decode a character unless it is the PSEUDO_EOF
+<b class="fc">&nbsp;            if ( nextBit == 0) {</b>
+&nbsp;                // Go left in the tree
+<b class="fc">&nbsp;                nodePointer = ((HuffInternalNode) nodePointer).left() ;</b>
+&nbsp;            } else {
+<b class="fc">&nbsp;                nodePointer = ((HuffInternalNode) nodePointer).right();</b>
+&nbsp;            }
+&nbsp;
+&nbsp;            // After going left/right, check if we are at a leaf
+<b class="fc">&nbsp;            if (nodePointer.isLeaf()) {</b>
+<b class="fc">&nbsp;                HuffLeafNode leaf = (HuffLeafNode) nodePointer;</b>
+<b class="fc">&nbsp;                if (leaf.element() == PSEUDO_EOF) {</b>
+&nbsp;                    // End of file, break out of while loop
+&nbsp;                    break;
+&nbsp;                }
+&nbsp;
+&nbsp;                // Leaf node must be a regular character
+&nbsp;                try {
+&nbsp;                    // Write this character to the uncompressed file stream
+<b class="fc">&nbsp;                    out.write(leaf.element());</b>
+&nbsp;                } catch (IOException e) {
+<b class="nc">&nbsp;                    throw new RuntimeException(e);</b>
+&nbsp;                }
+&nbsp;
+<b class="fc">&nbsp;                uncompressedSize += BITS_PER_WORD;</b>
+&nbsp;
+&nbsp;                // Reset the node to the root, so we can decode the next character
+<b class="fc">&nbsp;                nodePointer = huffTree.root();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        in.close();
+&nbsp;        out.close();
+<b class="fc">&nbsp;        return uncompressedSize;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public HuffTree makeHuffTree(InputStream stream) throws IOException {
+<b class="fc">&nbsp;        CharCounter cc = new CharCounter();</b>
+<b class="fc">&nbsp;        cc.countAll(stream);</b>
+<b class="fc">&nbsp;        characterFrequency = cc.getTable();</b>
+&nbsp;
+<b class="fc">&nbsp;        PriorityQueue&lt;HuffTree&gt; queue = new PriorityQueue&lt;&gt;();</b>
+<b class="fc">&nbsp;        for (Map.Entry&lt;Integer, Integer&gt; entry : characterFrequency.entrySet()) {</b>
+<b class="fc">&nbsp;            Integer character = entry.getKey();</b>
+<b class="fc">&nbsp;            Integer frequency = entry.getValue();</b>
+&nbsp;            // All nodes are initially leaves
+<b class="fc">&nbsp;            HuffTree t = new HuffTree(character, frequency);</b>
+<b class="fc">&nbsp;            queue.add(t);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Add one more leaf for the PSEUDO_EOF
+<b class="fc">&nbsp;        queue.add(new HuffTree(PSEUDO_EOF, 1));</b>
+&nbsp;
+<b class="fc">&nbsp;        HuffTree tempTree = null;</b>
+<b class="fc">&nbsp;        while(queue.size() &gt; 1) {</b>
+<b class="fc">&nbsp;            HuffTree temp1 = queue.poll();</b>
+<b class="fc">&nbsp;            HuffTree temp2 = queue.poll();</b>
+<b class="fc">&nbsp;            tempTree = new HuffTree(temp1.root(), temp2.root(), temp1.weight() + temp2.weight());</b>
+<b class="fc">&nbsp;            queue.add(tempTree);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        huffTree = tempTree;</b>
+<b class="fc">&nbsp;        return huffTree;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public HuffTree getHuffTree() {
+<b class="fc">&nbsp;        return huffTree;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

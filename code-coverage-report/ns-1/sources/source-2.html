@@ -1,0 +1,275 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BitOutputStream</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: BitOutputStream (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BitOutputStream</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    82.4%
+  </span>
+  <span class="absValue">
+    (28/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;
+&nbsp;/**
+&nbsp; * Write bits-at-a-time where the number of bits is between 1 and 32
+&nbsp; * Client programs must call &lt;code&gt;flush&lt;/code&gt; or
+&nbsp; * &lt;code&gt;close&lt;/code&gt; when finished writing or not all bits will be written.
+&nbsp; * This class is intended to be used with &lt;code&gt;BitInputStream&lt;/code&gt; to
+&nbsp; * facilitate reading and writing data in a bits-at-a-time manner.
+&nbsp; * &lt;P&gt;
+&nbsp; * Updated for version 2.0 to extend java.io.OutputStream
+&nbsp; * &lt;P&gt;
+&nbsp; * Any exceptions generated are rethrown as &lt;code&gt;RuntimeException&lt;/code&gt; objects
+&nbsp; * so client code does not have to catch or rethrow them.
+&nbsp; * &lt;P&gt;
+&nbsp; * @author Owen Astrachan
+&nbsp; * @version 1.0, July 2000
+&nbsp; * @version 2.0, October 2004
+&nbsp; */
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;
+&nbsp;public class BitOutputStream extends OutputStream
+&nbsp;{
+&nbsp;    
+&nbsp;
+&nbsp;    private OutputStream  myOutput;
+&nbsp;    private int           myBuffer;
+&nbsp;    private int           myBitsToGo;
+&nbsp;    
+<b class="fc">&nbsp;    private static final int bmask[] = {</b>
+&nbsp;        0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff,
+&nbsp;        0x1ff,0x3ff,0x7ff,0xfff,0x1fff,0x3fff,0x7fff,0xffff,
+&nbsp;        0x1ffff,0x3ffff,0x7ffff,0xfffff,0x1fffff,0x3fffff,
+&nbsp;        0x7fffff,0xffffff,0x1ffffff,0x3ffffff,0x7ffffff,
+&nbsp;        0xfffffff,0x1fffffff,0x3fffffff,0x7fffffff,0xffffffff
+&nbsp;    };
+&nbsp;
+&nbsp;    private static final int BITS_PER_BYTE = 8;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Required by OutputStream subclasses, write the low
+&nbsp;     * 8-bits to the underlying outputstream
+&nbsp;     */
+&nbsp;    public void write(int b) throws IOException {
+<b class="fc">&nbsp;        myOutput.write(b);</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Create a stream that writes-through to the &lt;code&gt;OutputStream&lt;/code&gt; object
+&nbsp;     * passed as a parameter.
+&nbsp;     * @param out is the output stream to which bits are written
+&nbsp;     */
+<b class="fc">&nbsp;    public BitOutputStream(OutputStream out){</b>
+<b class="fc">&nbsp;        myOutput = out;</b>
+<b class="fc">&nbsp;        initialize();</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    private void initialize(){
+<b class="fc">&nbsp;        myBuffer = 0;</b>
+<b class="fc">&nbsp;        myBitsToGo = BITS_PER_BYTE;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Construct a bit-at-a-time output stream with specified file
+&nbsp;     * name.
+&nbsp;     * @param filename is the name of the file being written
+&nbsp;     * @throws RuntimeException if opening file fails for either FileNotFound
+&nbsp;     * or for Security exceptoins
+&nbsp;     */
+&nbsp;    public BitOutputStream(String filename)
+<b class="fc">&nbsp;    {</b>
+&nbsp;        try{
+<b class="fc">&nbsp;            myOutput = new BufferedOutputStream(new FileOutputStream(filename)); </b>
+&nbsp;        }
+&nbsp;        catch (FileNotFoundException fnf){
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;could not create &quot; + filename + &quot; &quot; + fnf);</b>
+&nbsp;        }
+&nbsp;        catch(SecurityException se){
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;security exception on write &quot; + se);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        initialize();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Flushes bits not yet written, must be called by client
+&nbsp;     * programs if &lt;code&gt;close&lt;/code&gt; isn&#39;t called.
+&nbsp;     * @throws RuntimeException if there&#39;s a problem writing bits
+&nbsp;     */
+&nbsp;    public void flush()
+&nbsp;    {
+<b class="fc">&nbsp;        if (myBitsToGo != BITS_PER_BYTE) {</b>
+&nbsp;            try{
+<b class="fc">&nbsp;                write( (myBuffer &lt;&lt; myBitsToGo) );</b>
+&nbsp;            }
+&nbsp;            catch (java.io.IOException ioe){
+<b class="nc">&nbsp;                throw new RuntimeException(&quot;error writing bits on flush &quot; + ioe);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            myBuffer = 0;</b>
+<b class="fc">&nbsp;            myBitsToGo = BITS_PER_BYTE;</b>
+&nbsp;        }
+&nbsp;                
+&nbsp;        try{
+<b class="fc">&nbsp;            myOutput.flush();    </b>
+&nbsp;        }
+&nbsp;        catch (java.io.IOException ioe){
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;error on flush &quot; + ioe);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Releases system resources associated with file and
+&nbsp;     * flushes bits not yet written. Either this function
+&nbsp;     * or flush must be called or not all bits will be written
+&nbsp;     * @throws RuntimeException if close fails
+&nbsp;     */
+&nbsp;
+&nbsp;    public void close()
+&nbsp;    {
+<b class="fc">&nbsp;        flush();</b>
+&nbsp;        try{
+<b class="fc">&nbsp;            myOutput.close();</b>
+&nbsp;        }
+&nbsp;        catch (IOException ioe){
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;error closing BitOutputStream &quot; + ioe);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Write specified number of bits from value to a file.
+&nbsp;     * @param howManyBits is number of bits to write (1-32)
+&nbsp;     * @param value is source of bits, rightmost bits are written
+&nbsp;     * @throws RuntimeException if there&#39;s an I/O problem writing bits
+&nbsp;     */
+&nbsp;    
+&nbsp;    public void write(int howManyBits, int value)
+&nbsp;    {
+<b class="fc">&nbsp;        value &amp;= bmask[howManyBits];  // only right most bits valid</b>
+&nbsp;
+<b class="fc">&nbsp;        while (howManyBits &gt;= myBitsToGo){</b>
+<b class="fc">&nbsp;            myBuffer = (myBuffer &lt;&lt; myBitsToGo) |</b>
+&nbsp;                       (value &gt;&gt; (howManyBits - myBitsToGo));
+&nbsp;            try{
+<b class="fc">&nbsp;                write(myBuffer);    </b>
+&nbsp;            }
+&nbsp;            catch (java.io.IOException ioe){
+<b class="nc">&nbsp;                throw new RuntimeException(&quot;error writing bits &quot; + ioe);</b>
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            value &amp;= bmask[howManyBits - myBitsToGo];</b>
+<b class="fc">&nbsp;            howManyBits -= myBitsToGo;</b>
+<b class="fc">&nbsp;            myBitsToGo = BITS_PER_BYTE;</b>
+<b class="fc">&nbsp;            myBuffer = 0;</b>
+&nbsp;        }
+&nbsp;        
+<b class="fc">&nbsp;        if (howManyBits &gt; 0) {</b>
+<b class="fc">&nbsp;            myBuffer = (myBuffer &lt;&lt; howManyBits) | value;</b>
+<b class="fc">&nbsp;            myBitsToGo -= howManyBits;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

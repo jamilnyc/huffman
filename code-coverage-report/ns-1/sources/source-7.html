@@ -1,0 +1,169 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > HuffLeafNode</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: HuffLeafNode (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HuffLeafNode</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (4/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (6/9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;
+&nbsp;/**
+&nbsp; * @author ericfouh
+&nbsp; *
+&nbsp; */
+&nbsp;public class HuffLeafNode
+&nbsp;    implements IHuffBaseNode
+&nbsp;{
+&nbsp;
+&nbsp;    private int element; // Element for this node
+&nbsp;    private int  weight;  // Weight for this node
+&nbsp;
+&nbsp;
+&nbsp;    /** Constructor
+&nbsp;     * @param el
+&nbsp;     * @param wt */
+&nbsp;    public HuffLeafNode(int el, int wt)
+<b class="fc">&nbsp;    {</b>
+<b class="fc">&nbsp;        element = el;</b>
+<b class="fc">&nbsp;        weight = wt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /** @return The element value */
+&nbsp;    int element()
+&nbsp;    {
+<b class="fc">&nbsp;        return element;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /** @return The weight */
+&nbsp;    public int weight()
+&nbsp;    {
+<b class="fc">&nbsp;        return weight;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /** Return true */
+&nbsp;    public boolean isLeaf()
+&nbsp;    {
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int compareTo(Object o)
+&nbsp;    {
+<b class="nc">&nbsp;        if (o instanceof HuffLeafNode)</b>
+<b class="nc">&nbsp;            return this.weight() - ((HuffLeafNode)o).weight();</b>
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

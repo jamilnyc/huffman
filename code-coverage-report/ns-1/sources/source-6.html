@@ -1,0 +1,205 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > HuffInternalNode</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: HuffInternalNode (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HuffInternalNode</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.5%
+  </span>
+  <span class="absValue">
+    (5/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61.5%
+  </span>
+  <span class="absValue">
+    (8/13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;
+&nbsp;// -------------------------------------------------------------------------
+&nbsp;/**
+&nbsp; * Write a one-sentence summary of your class here. Follow it with additional
+&nbsp; * details about its purpose, what abstraction it represents, and how to use it.
+&nbsp; *
+&nbsp; * @author ericfouh
+&nbsp; * @version Mar 16, 2016
+&nbsp; */
+&nbsp;public class HuffInternalNode
+&nbsp;    implements IHuffBaseNode
+&nbsp;{
+&nbsp;    private int           weight;
+&nbsp;    private IHuffBaseNode left;
+&nbsp;    private IHuffBaseNode right;
+&nbsp;
+&nbsp;
+&nbsp;    /** Constructor */
+&nbsp;    HuffInternalNode(IHuffBaseNode l, IHuffBaseNode r, int wt)
+<b class="fc">&nbsp;    {</b>
+<b class="fc">&nbsp;        left = l;</b>
+<b class="fc">&nbsp;        right = r;</b>
+<b class="fc">&nbsp;        weight = wt;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /** @return The left child */
+&nbsp;    IHuffBaseNode left()
+&nbsp;    {
+<b class="fc">&nbsp;        return left;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // ----------------------------------------------------------
+&nbsp;    /**
+&nbsp;     * Place a description of your method here.
+&nbsp;     *
+&nbsp;     * @param l
+&nbsp;     */
+&nbsp;    public void setLeft(IHuffBaseNode l)
+&nbsp;    {
+<b class="nc">&nbsp;        left = l;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /** @return The right child */
+&nbsp;    IHuffBaseNode right()
+&nbsp;    {
+<b class="fc">&nbsp;        return right;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    // ----------------------------------------------------------
+&nbsp;    /**
+&nbsp;     * Place a description of your method here.
+&nbsp;     * @param r
+&nbsp;     */
+&nbsp;    public void setRight(IHuffBaseNode r)
+&nbsp;    {
+<b class="nc">&nbsp;        right = r;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public boolean isLeaf()
+&nbsp;    {
+&nbsp;
+<b class="fc">&nbsp;        return false;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int weight()
+&nbsp;    {
+&nbsp;
+<b class="fc">&nbsp;        return weight;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public int compareTo(Object o)
+&nbsp;    {
+&nbsp;        // TODO Auto-generated method stub
+<b class="nc">&nbsp;        if (o instanceof HuffInternalNode)</b>
+<b class="nc">&nbsp;            return this.weight() - ((HuffInternalNode)o).weight();</b>
+<b class="nc">&nbsp;        return 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

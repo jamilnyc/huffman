@@ -1,0 +1,361 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > HuffTest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: HuffTest (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HuffTest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (4/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.8%
+  </span>
+  <span class="absValue">
+    (90/97)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;import org.junit.jupiter.api.Test;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.nio.file.Paths;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import static org.junit.jupiter.api.Assertions.*;
+&nbsp;
+<b class="fc">&nbsp;class HuffTest {</b>
+&nbsp;    // File names
+<b class="fc">&nbsp;    public static String ORIGINAL_TEST_FILE = &quot;original.test.txt&quot;;</b>
+<b class="fc">&nbsp;    public static String COMPRESSED_TEST_FILE = &quot;compressed.test.bin&quot;;</b>
+<b class="fc">&nbsp;    public static String UNCOMPRESSED_TEST_FILE = &quot;uncompressed.test.txt&quot;;</b>
+<b class="fc">&nbsp;    public static String LONG_ORIGINAL_TEST_FILE = &quot;long-original.test.txt&quot;;</b>
+<b class="fc">&nbsp;    public static String LONG_COMPRESSED_TEST_FILE = &quot;long-compressed.test.txt&quot;;</b>
+<b class="fc">&nbsp;    public static String LONG_UNCOMPRESSED_TEST_FILE = &quot;long-uncompressed.test.txt&quot;;</b>
+<b class="fc">&nbsp;    public static String HEADER_TEST_FILE = &quot;header.test.txt&quot;;</b>
+<b class="fc">&nbsp;    public static String FAKE_COMPRESSED_TEST_FILE = &quot;fake-compressed.test.txt&quot;;</b>
+&nbsp;
+&nbsp;    public static final String TEST_STRING = &quot;teststring&quot;;
+&nbsp;
+&nbsp;    private Huff getTestHuff() {
+<b class="fc">&nbsp;        InputStream ins = new ByteArrayInputStream(TEST_STRING.getBytes());</b>
+<b class="fc">&nbsp;        Huff h = new Huff();</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            h.makeHuffTree(ins);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            fail(&quot;Exception while counting characters&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        HuffTree tree = h.getHuffTree();</b>
+&nbsp;
+&nbsp;        // The tree size and weight were calculated by hand first
+<b class="fc">&nbsp;        assertEquals(11, tree.root().weight(), &quot;Root of the HuffTree should be weight 10&quot;);</b>
+<b class="fc">&nbsp;        assertEquals(87, tree.size());</b>
+&nbsp;
+<b class="fc">&nbsp;        return h;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testCharacterFrequency() {
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+&nbsp;
+<b class="fc">&nbsp;        Map&lt;Integer, Integer&gt; frequencies = h.showCounts();</b>
+<b class="fc">&nbsp;        int ch = &#39;t&#39;;</b>
+<b class="fc">&nbsp;        assertEquals(3, frequencies.get(ch), &quot;There should be 3 instances of letter t&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testCharacterEncodings() {
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+&nbsp;
+<b class="fc">&nbsp;        Map&lt;Integer, String&gt; characterEncodings = h.makeTable();</b>
+&nbsp;
+<b class="fc">&nbsp;        assertEquals(8, characterEncodings.size(), &quot;There should be 8 characters encoded&quot;);</b>
+<b class="fc">&nbsp;        int c = &#39;t&#39;;</b>
+<b class="fc">&nbsp;        assertEquals(2, h.getCode(c).length(), &quot;The character t should have the shortest code of length 2&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testHeader() {
+<b class="fc">&nbsp;        deleteFileIfExists(HEADER_TEST_FILE);</b>
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+&nbsp;
+<b class="fc">&nbsp;        int expectedHeaderSize = (</b>
+&nbsp;          IHuffConstants.BITS_PER_INT // 32 bits for magic number
+&nbsp;          + 7 // 7 0&#39;s for internal nodes
+&nbsp;          + 8 // 7 1&#39;s for leaves
+&nbsp;          + ((IHuffConstants.BITS_PER_WORD + 1) * 8) // 9 bits for each of the 7 ASCII characters in the leaves
+&nbsp;        );
+&nbsp;
+<b class="fc">&nbsp;        FileOutputStream fos = null;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;             fos = new FileOutputStream(HEADER_TEST_FILE);</b>
+&nbsp;        } catch (FileNotFoundException e) {
+<b class="nc">&nbsp;            fail(e.getMessage());</b>
+&nbsp;        }
+<b class="fc">&nbsp;        BitOutputStream bos = new BitOutputStream(fos);</b>
+<b class="fc">&nbsp;        int actualHeaderSize =  h.writeHeader(bos);</b>
+<b class="fc">&nbsp;        assertEquals(expectedHeaderSize, actualHeaderSize, &quot;Header size did not match&quot;);</b>
+&nbsp;
+&nbsp;        try {
+&nbsp;            fos.close(); //do not forget to close the stream
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            fail(&quot;Exception while closing output stream&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        BitInputStream bis = new BitInputStream(HEADER_TEST_FILE);</b>
+<b class="fc">&nbsp;        HuffTree tree = null;</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            tree = h.readHeader(bis);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            fail(e.getMessage());</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Test that the tree was reconstructed
+<b class="fc">&nbsp;        assertEquals(87, tree.size(), &quot;Tree size did not match&quot;);</b>
+<b class="fc">&nbsp;        assertFalse(tree.root().isLeaf(), &quot;Root should NOT be a leaf&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private int getExpectedCompressedFileSize() {
+<b class="fc">&nbsp;        return</b>
+&nbsp;        // Header Size
+&nbsp;        IHuffConstants.BITS_PER_INT // 32 bits for magic number
+&nbsp;        + 7 // 7 0&#39;s for internal nodes
+&nbsp;        + 8 // 7 1&#39;s for leaves
+&nbsp;        + ((IHuffConstants.BITS_PER_WORD + 1) * 8) // 9 bits for each of the 7 ASCII characters in the leaves
+&nbsp;
+&nbsp;        // Body Size
+&nbsp;        + (3 * 2) // Letter &#39;t&#39; appears 3 times, encoding length is 2
+&nbsp;        + (2 * 3) // Letter &#39;s&#39; appears 2 times, encoding length is 3
+&nbsp;        + (1 * 3) // Letter &#39;r&#39; appears 1 time, encoding length is 3
+&nbsp;        + (1 * 3) // Letter &#39;e&#39; appears 1 time, encoding length is 3
+&nbsp;        + (1 * 3) // Letter &#39;i&#39; appears 1 time, encoding length is 3
+&nbsp;        + (1 * 3) // Letter &#39;n&#39; appears 1 time, encoding length is 3
+&nbsp;        + (1 * 4) // Letter &#39;g&#39; appears 1 time, encoding length is 4
+&nbsp;        + (1 * 4) // PSEUDO_EOF
+&nbsp;        ;
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * This function is used to clean up files before actual testing, so we can re-run tests.
+&nbsp;     *
+&nbsp;     * @param fileName Name of file to delete
+&nbsp;     */
+&nbsp;    private void deleteFileIfExists(String fileName) {
+<b class="fc">&nbsp;        File file = new File(fileName);</b>
+<b class="fc">&nbsp;        file.delete();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testCompressionWithForce() {
+<b class="fc">&nbsp;        deleteFileIfExists(COMPRESSED_TEST_FILE);</b>
+&nbsp;
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+<b class="fc">&nbsp;        int actualCompressedSize = h.write(ORIGINAL_TEST_FILE, COMPRESSED_TEST_FILE, true);</b>
+<b class="fc">&nbsp;        assertEquals(getExpectedCompressedFileSize(), actualCompressedSize, &quot;Compressed size did not match&quot;);</b>
+&nbsp;
+&nbsp;        // Check that compressed file was created
+<b class="fc">&nbsp;        File compressedFile = new File(COMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        assertTrue(compressedFile.exists(), &quot;Compressed file did not exist&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testCompressionWithoutForce() {
+<b class="fc">&nbsp;        deleteFileIfExists(&quot;compressed.test.bin&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+<b class="fc">&nbsp;        int actualCompressedSize = h.write(&quot;original.test.txt&quot;, &quot;compressed.test.bin&quot;, false);</b>
+<b class="fc">&nbsp;        assertEquals(getExpectedCompressedFileSize(), actualCompressedSize, &quot;Compressed size did not match&quot;);</b>
+&nbsp;
+&nbsp;        // Check that compressed file was NOT created
+<b class="fc">&nbsp;        File compressedFile = new File(&quot;compressed.test.bin&quot;);</b>
+<b class="fc">&nbsp;        assertFalse(compressedFile.exists(), &quot;Compressed file should not exist&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testCompressionAndDecompression() {
+<b class="fc">&nbsp;        deleteFileIfExists(COMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        deleteFileIfExists(UNCOMPRESSED_TEST_FILE);</b>
+&nbsp;
+&nbsp;        // Force compression
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+<b class="fc">&nbsp;        int actualCompressedSize = h.write(ORIGINAL_TEST_FILE, COMPRESSED_TEST_FILE, true);</b>
+<b class="fc">&nbsp;        assertEquals(getExpectedCompressedFileSize(), actualCompressedSize, &quot;Compressed size did not match&quot;);</b>
+&nbsp;
+&nbsp;        // Check that compressed file was created
+<b class="fc">&nbsp;        File compressedFile = new File(COMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        assertTrue(compressedFile.exists(), &quot;Compressed file did not exist&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        int actualUncompressedSize = h.uncompress(COMPRESSED_TEST_FILE, UNCOMPRESSED_TEST_FILE);</b>
+&nbsp;
+<b class="fc">&nbsp;        File uncompressedFile = new File(UNCOMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        assertTrue(uncompressedFile.exists(), &quot;Uncompressed file did not exist&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        int expectedUncompressedSize = IHuffConstants.BITS_PER_WORD * 10;</b>
+<b class="fc">&nbsp;        assertEquals(expectedUncompressedSize, actualUncompressedSize, &quot;Uncompressed size did not match&quot;);</b>
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;String&gt; lines = Files.readAllLines(Paths.get(UNCOMPRESSED_TEST_FILE));</b>
+<b class="fc">&nbsp;            assertEquals(1, lines.size(), &quot;Uncompressed size did not match&quot;);</b>
+<b class="fc">&nbsp;            assertEquals(TEST_STRING, lines.get(0), &quot;Uncompressed size did not match&quot;);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            fail(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testCompressionAndDecompressionWithLongFile() {
+&nbsp;        // This test works the same as the previous one, but we use a file
+&nbsp;        // with a lot of text so that we achieve a good compression ratio and are not
+&nbsp;        // required to force compression.
+&nbsp;
+<b class="fc">&nbsp;        deleteFileIfExists(LONG_COMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        deleteFileIfExists(LONG_UNCOMPRESSED_TEST_FILE);</b>
+&nbsp;
+<b class="fc">&nbsp;        File originalFile = new File(LONG_ORIGINAL_TEST_FILE);</b>
+&nbsp;
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+<b class="fc">&nbsp;        int actualCompressedSize = h.write(LONG_ORIGINAL_TEST_FILE, LONG_COMPRESSED_TEST_FILE, false);</b>
+<b class="fc">&nbsp;        int originalFileSize = (int) originalFile.length() * IHuffConstants.BITS_PER_WORD;</b>
+&nbsp;
+<b class="pc">&nbsp;        assertTrue(actualCompressedSize &lt; originalFileSize, &quot;Compression did not save space&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        int actualUncompressedSize = h.uncompress(LONG_COMPRESSED_TEST_FILE, LONG_UNCOMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        File uncompressedFile = new File(LONG_UNCOMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        assertTrue(uncompressedFile.exists(), &quot;Uncompressed file did not exist&quot;);</b>
+<b class="pc">&nbsp;        assertTrue(actualUncompressedSize &gt; actualCompressedSize, &quot;Uncompressed file should be bigger than compressed file&quot;);</b>
+&nbsp;
+&nbsp;
+&nbsp;        try {
+<b class="fc">&nbsp;            List&lt;String&gt; originalLines = Files.readAllLines(Paths.get(LONG_ORIGINAL_TEST_FILE));</b>
+<b class="fc">&nbsp;            List&lt;String&gt; uncompressedLines = Files.readAllLines(Paths.get(LONG_UNCOMPRESSED_TEST_FILE));</b>
+&nbsp;
+<b class="fc">&nbsp;            assertEquals(originalLines.size(), uncompressedLines.size(), &quot;The original and uncompressed files should have the same number of lines&quot;);</b>
+<b class="fc">&nbsp;            for (int i = 0; i &lt; originalLines.size(); i++) {</b>
+<b class="fc">&nbsp;                assertEquals(originalLines.get(i), uncompressedLines.get(i), &quot;Line number &quot; + (i+1) + &quot; did not match&quot;);</b>
+&nbsp;            }
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            fail(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @Test
+&nbsp;    void testMalformedDecompression() {
+<b class="fc">&nbsp;        deleteFileIfExists(UNCOMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        Huff h = getTestHuff();</b>
+&nbsp;
+&nbsp;        try {
+&nbsp;            // This file was not compressed with our algorithm so should not be able to be uncompressed successfully
+<b class="fc">&nbsp;            h.uncompress(FAKE_COMPRESSED_TEST_FILE, UNCOMPRESSED_TEST_FILE);</b>
+&nbsp;
+&nbsp;            // If we reach this, that means we were able to uncompress the file, which is not correct.
+<b class="nc">&nbsp;            fail(&quot;You should not be able to uncompress this file&quot;);</b>
+&nbsp;        } catch (RuntimeException e) {
+<b class="fc">&nbsp;            String message = e.getMessage();</b>
+<b class="fc">&nbsp;            boolean matches = message.contains(&quot;Magic Number did not match. Expected: 1234567873&quot;);</b>
+<b class="fc">&nbsp;            assertTrue(matches, &quot;Exception should be thrown about magic number not matching&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

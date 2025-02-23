@@ -1,0 +1,159 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > CharCounterTest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: CharCounterTest (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CharCounterTest</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;import java.io.ByteArrayInputStream;
+&nbsp;import java.io.IOException;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.nio.charset.StandardCharsets;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;import static org.junit.jupiter.api.Assertions.*;
+<b class="nc">&nbsp;class CharCounterTest {</b>
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.BeforeEach
+&nbsp;    void setUp() {
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.AfterEach
+&nbsp;    void tearDown() {
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.Test
+&nbsp;    void getCount() {
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.Test
+&nbsp;    void countAll() {
+<b class="nc">&nbsp;        CharCounter cc = new CharCounter();</b>
+&nbsp;
+<b class="nc">&nbsp;        InputStream ins = new ByteArrayInputStream(&quot;teststring&quot;.getBytes(StandardCharsets.UTF_8));</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            int bitCount = cc.countAll(ins);</b>
+<b class="nc">&nbsp;            assertEquals(&quot;teststring&quot;.length() * CharCounter.BITS_PER_WORD, bitCount, &quot;The bit count was incorrect&quot;);</b>
+<b class="nc">&nbsp;            Map&lt;Integer, Integer&gt; frequencyTable = cc.getTable();</b>
+&nbsp;
+<b class="nc">&nbsp;            int key = &#39;t&#39;;</b>
+<b class="nc">&nbsp;            int count = frequencyTable.get(key);</b>
+<b class="nc">&nbsp;            assertEquals(3, count, &quot;The letter &#39;t&#39; should be counted 3 times&quot;);</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            fail(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.Test
+&nbsp;    void add() {
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.Test
+&nbsp;    void set() {
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.Test
+&nbsp;    void clear() {
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    @org.junit.jupiter.api.Test
+&nbsp;    void getTable() {
+<b class="nc">&nbsp;    }</b>
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

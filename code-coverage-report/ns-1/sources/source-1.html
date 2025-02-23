@@ -1,0 +1,287 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BitInputStream</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: BitInputStream (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BitInputStream</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71.4%
+  </span>
+  <span class="absValue">
+    (10/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    82.4%
+  </span>
+  <span class="absValue">
+    (28/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;import java.io.*;
+&nbsp;
+&nbsp;/**
+&nbsp; * Reads bits-at-a-time where the number of bits is between 1 and 32.
+&nbsp; * Updated for version 2.0 to extend java.io.InputStream. This class
+&nbsp; * can be used together with &lt;code&gt;BitOutputStream&lt;/code&gt; to facilitate
+&nbsp; * reading and writing data several bits-at-a-time. BitInputStream objects
+&nbsp; * that are constructed from a File support &lt;code&gt;reset()&lt;/code&gt;. However,
+&nbsp; * if constructed from an &lt;code&gt;InputStream&lt;/code&gt; an object cannot be reset.
+&nbsp; * &lt;P&gt;
+&nbsp; * Any exceptions generated are rethrown as &lt;code&gt;RuntimeException&lt;/code&gt; objects
+&nbsp; * so client code does not have to catch or rethrow them. (Unless the extension
+&nbsp; * of &lt;code&gt;InputStream&lt;/code&gt; requires throwing as another type of exception, e.g.,
+&nbsp; * as with method &lt;code&gt;read&lt;/code&gt;.
+&nbsp; * &lt;P&gt;
+&nbsp; * @author Owen Astrachan
+&nbsp; * @version 1.0, July 2000
+&nbsp; * @version 2.0, October 2004
+&nbsp; */
+&nbsp;
+&nbsp;public class BitInputStream extends InputStream
+&nbsp;{
+&nbsp;    private InputStream     myInput;
+&nbsp;    private int             myBitCount;
+&nbsp;    private int             myBuffer;
+&nbsp;    private File            myFile;
+&nbsp;    
+<b class="fc">&nbsp;    private static final int bmask[] = {</b>
+&nbsp;        0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff,
+&nbsp;        0x1ff,0x3ff,0x7ff,0xfff,0x1fff,0x3fff,0x7fff,0xffff,
+&nbsp;        0x1ffff,0x3ffff,0x7ffff,0xfffff,0x1fffff,0x3fffff,
+&nbsp;        0x7fffff,0xffffff,0x1ffffff,0x3ffffff,0x7ffffff,
+&nbsp;        0xfffffff,0x1fffffff,0x3fffffff,0x7fffffff,0xffffffff
+&nbsp;    };
+&nbsp;
+&nbsp;    private static final int BITS_PER_BYTE = 8;
+&nbsp;    /**
+&nbsp;     * Construct a bit-at-a-time input stream from a file whose
+&nbsp;     * name is supplied. 
+&nbsp;     * @param filename is the name of the file that will be read.
+&nbsp;     * @throws RuntimeException if filename cannot be opened.
+&nbsp;     */
+&nbsp;    public BitInputStream(String filename)
+&nbsp;    {
+<b class="fc">&nbsp;        this(new File(filename));</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Construct a bit-at-a-time input stream from &lt;code&gt;file&lt;/code&gt;.
+&nbsp;     * @param file is the File that is the source of the input
+&nbsp;     * @throws RuntimeExceptoin if file cannot be opened.
+&nbsp;     */
+&nbsp;    public BitInputStream(File file)
+<b class="fc">&nbsp;    {</b>
+<b class="fc">&nbsp;        myFile = file;  </b>
+&nbsp;        try {
+<b class="fc">&nbsp;            reset();</b>
+&nbsp;        } catch (IOException e) {
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;could not open file for reading bits &quot;+e);</b>
+&nbsp;        }
+&nbsp;        
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Open a bit-at-a-time stream that reads from supplied InputStream. If this
+&nbsp;     * constructor is used the BitInputStream is not reset-able.
+&nbsp;     * @param in is the stream from which bits are read.
+&nbsp;     */
+<b class="fc">&nbsp;    public BitInputStream(InputStream in){</b>
+<b class="fc">&nbsp;        myInput = in;</b>
+<b class="fc">&nbsp;        myFile = null;</b>
+&nbsp;    }
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Return true if the stream has been initialized from a File and
+&nbsp;     * is thus reset-able. If constructed from an InputStream it is not reset-able.
+&nbsp;     * @return true if stream can be reset (it has been constructed appropriately from a File).
+&nbsp;     */
+&nbsp;    public boolean markSupported(){
+<b class="pc">&nbsp;        return myFile != null;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Reset stream to beginning. The implementation creates a new
+&nbsp;     * stream.
+&nbsp;     * @throws IOException if not reset-able (e.g., constructed from InputStream).
+&nbsp;     */
+&nbsp;    
+&nbsp;    public void reset() throws IOException
+&nbsp;    {
+<b class="pc">&nbsp;        if (! markSupported()){</b>
+<b class="nc">&nbsp;            throw new IOException(&quot;not resettable&quot;);</b>
+&nbsp;        }
+&nbsp;        try{
+&nbsp;            close();
+<b class="fc">&nbsp;            myInput = new BufferedInputStream(new FileInputStream(myFile));</b>
+&nbsp;        }
+&nbsp;        catch (FileNotFoundException fnf){
+<b class="nc">&nbsp;            System.err.println(&quot;error opening &quot; + myFile.getName() + &quot; &quot; + fnf);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        myBuffer = myBitCount = 0;</b>
+&nbsp;    } 
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Closes the input stream.
+&nbsp;     * @throws RuntimeException if the close fails
+&nbsp;     */
+&nbsp;    
+&nbsp;    public void close()
+&nbsp;    {
+&nbsp;        try{
+<b class="fc">&nbsp;            if (myInput != null) {</b>
+<b class="fc">&nbsp;                myInput.close();</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;        catch (java.io.IOException ioe){
+<b class="nc">&nbsp;           throw new RuntimeException(&quot;error closing bit stream &quot; + ioe);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the number of bits requested as rightmost bits in
+&nbsp;     * returned value, returns -1 if not enough bits available to
+&nbsp;     * satisfy the request.
+&nbsp;     *
+&nbsp;     * @param howManyBits is the number of bits to read and return
+&nbsp;     * @return the value read, only rightmost &lt;code&gt;howManyBits&lt;/code&gt;
+&nbsp;     * are valid, returns -1 if not enough bits left
+&nbsp;     */
+&nbsp;
+&nbsp;    public int read(int howManyBits) throws IOException
+&nbsp;    {
+<b class="fc">&nbsp;        int retval = 0;</b>
+<b class="pc">&nbsp;        if (myInput == null){</b>
+<b class="nc">&nbsp;            return -1;</b>
+&nbsp;        }
+&nbsp;        
+<b class="fc">&nbsp;        while (howManyBits &gt; myBitCount){</b>
+<b class="fc">&nbsp;            retval |= ( myBuffer &lt;&lt; (howManyBits - myBitCount) );</b>
+<b class="fc">&nbsp;            howManyBits -= myBitCount;</b>
+&nbsp;            try{
+<b class="fc">&nbsp;                if ( (myBuffer = myInput.read()) == -1) {</b>
+<b class="fc">&nbsp;                    return -1;</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;            catch (IOException ioe) {
+<b class="nc">&nbsp;                throw new IOException(&quot;bitreading trouble &quot;+ioe);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            myBitCount = BITS_PER_BYTE;</b>
+&nbsp;        }
+&nbsp;
+<b class="pc">&nbsp;        if (howManyBits &gt; 0){</b>
+<b class="fc">&nbsp;            retval |= myBuffer &gt;&gt; (myBitCount - howManyBits);</b>
+<b class="fc">&nbsp;            myBuffer &amp;= bmask[myBitCount - howManyBits];</b>
+<b class="fc">&nbsp;            myBitCount -= howManyBits;</b>
+&nbsp;        }
+<b class="fc">&nbsp;        return retval;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Required by classes extending InputStream, returns
+&nbsp;     * the next byte from this stream as an int value.
+&nbsp;     * @return the next byte from this stream
+&nbsp;     */
+&nbsp;    public int read() throws IOException {
+<b class="fc">&nbsp;        return read(8);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>

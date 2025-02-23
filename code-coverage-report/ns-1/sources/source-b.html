@@ -1,0 +1,114 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > IHuffModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">&lt;empty package name&gt;</a>
+</div>
+
+<h1>Coverage Summary for Class: IHuffModel (&lt;empty package name&gt;)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">IHuffModel</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;import java.io.InputStream;
+&nbsp;import java.io.OutputStream;
+&nbsp;import java.util.Map;
+&nbsp;import java.io.File;
+&nbsp;/**
+&nbsp; * The interface for the model that can be attached to a HuffmanView. Most of
+&nbsp; * the work done in huffing (and unhuffing) will be via a class that implements
+&nbsp; * this interface. The interface may need to be extended depending on the design
+&nbsp; * of the huffman program.
+&nbsp; * &lt;P&gt;
+&nbsp; * 
+&nbsp; * @author Owen Astrachan, Eric Fouh
+&nbsp; */
+&nbsp;
+&nbsp;
+&nbsp;
+&nbsp;public interface IHuffModel
+&nbsp;    extends IHuffConstants
+&nbsp;{
+&nbsp;    
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Write a compressed version of the data read by the InputStream parameter,
+&nbsp;     * -- if the stream is not the same as the stream last passed to initialize,
+&nbsp;     * then compression won&#39;t be optimal, but will still work. If force is
+&nbsp;     * false, compression only occurs if it saves space. If force is true
+&nbsp;     * compression results even if no bits are saved.
+&nbsp;     * 
+&nbsp;     * @param inFile is the input stream to be compressed
+&nbsp;     * @param outFile   specifies the OutputStream/file to be written with compressed data
+&nbsp;     * @param force  indicates if compression forced
+&nbsp;     * @return the size of the compressed file
+&nbsp;     */
+&nbsp;    public int write(String inFile, String outFile, boolean force);
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Uncompress a previously compressed file.
+&nbsp;     * 
+&nbsp;     * @param inFile  is the compressed file to be uncompressed
+&nbsp;     * @param outFile is where the uncompressed bits will be written
+&nbsp;     * @return the size of the uncompressed file
+&nbsp;     */
+&nbsp;    public int uncompress(String inFile, String outFile);
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-02-23 11:26</div>
+</div>
+</body>
+</html>
