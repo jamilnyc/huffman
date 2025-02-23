@@ -5,6 +5,7 @@ lib
 
 # Files generated from running Unit Tests
 *compressed.test.txt
+header.test.txt
 
 !fake-compressed.test.txt
 

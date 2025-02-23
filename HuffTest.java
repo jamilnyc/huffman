@@ -9,19 +9,20 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HuffTest {
+    // File names
     public static String ORIGINAL_TEST_FILE = "original.test.txt";
     public static String COMPRESSED_TEST_FILE = "compressed.test.bin";
     public static String UNCOMPRESSED_TEST_FILE = "uncompressed.test.txt";
-
     public static String LONG_ORIGINAL_TEST_FILE = "long-original.test.txt";
     public static String LONG_COMPRESSED_TEST_FILE = "long-compressed.test.txt";
     public static String LONG_UNCOMPRESSED_TEST_FILE = "long-uncompressed.test.txt";
-
+    public static String HEADER_TEST_FILE = "header.test.txt";
     public static String FAKE_COMPRESSED_TEST_FILE = "fake-compressed.test.txt";
 
+    public static final String TEST_STRING = "teststring";
+
     private Huff getTestHuff() {
-        String test = "teststring";
-        InputStream ins = new ByteArrayInputStream(test.getBytes());
+        InputStream ins = new ByteArrayInputStream(TEST_STRING.getBytes());
         Huff h = new Huff();
         try {
             h.makeHuffTree(ins);
@@ -30,6 +31,8 @@ class HuffTest {
         }
 
         HuffTree tree = h.getHuffTree();
+
+        // The tree size and weight were calculated by hand first
         assertEquals(11, tree.root().weight(), "Root of the HuffTree should be weight 10");
         assertEquals(87, tree.size());
 
@@ -58,6 +61,7 @@ class HuffTest {
 
     @Test
     void testHeader() {
+        deleteFileIfExists(HEADER_TEST_FILE);
         Huff h = getTestHuff();
 
         int expectedHeaderSize = (
@@ -69,7 +73,7 @@ class HuffTest {
 
         FileOutputStream fos = null;
         try {
-             fos = new FileOutputStream("headertest1.txt");
+             fos = new FileOutputStream(HEADER_TEST_FILE);
         } catch (FileNotFoundException e) {
             fail(e.getMessage());
         }
@@ -83,7 +87,7 @@ class HuffTest {
             fail("Exception while closing output stream");
         }
 
-        BitInputStream bis = new BitInputStream("headertest1.txt");
+        BitInputStream bis = new BitInputStream(HEADER_TEST_FILE);
         HuffTree tree = null;
         try {
             tree = h.readHeader(bis);
@@ -128,14 +132,14 @@ class HuffTest {
 
     @Test
     void testCompressionWithForce() {
-        deleteFileIfExists("compressed.test.bin");
+        deleteFileIfExists(COMPRESSED_TEST_FILE);
 
         Huff h = getTestHuff();
-        int actualCompressedSize = h.write("original.test.txt", "compressed.test.bin", true);
+        int actualCompressedSize = h.write(ORIGINAL_TEST_FILE, COMPRESSED_TEST_FILE, true);
         assertEquals(getExpectedCompressedFileSize(), actualCompressedSize, "Compressed size did not match");
 
         // Check that compressed file was created
-        File compressedFile = new File("compressed.test.bin");
+        File compressedFile = new File(COMPRESSED_TEST_FILE);
         assertTrue(compressedFile.exists(), "Compressed file did not exist");
     }
 
@@ -153,7 +157,7 @@ class HuffTest {
     }
 
     @Test
-    void testDecompression() {
+    void testCompressionAndDecompression() {
         deleteFileIfExists(COMPRESSED_TEST_FILE);
         deleteFileIfExists(UNCOMPRESSED_TEST_FILE);
 
@@ -177,14 +181,18 @@ class HuffTest {
         try {
             List<String> lines = Files.readAllLines(Paths.get(UNCOMPRESSED_TEST_FILE));
             assertEquals(1, lines.size(), "Uncompressed size did not match");
-            assertEquals("teststring", lines.get(0), "Uncompressed size did not match");
+            assertEquals(TEST_STRING, lines.get(0), "Uncompressed size did not match");
         } catch (IOException e) {
             fail(e.getMessage());
         }
     }
 
     @Test
-    void testDecompressionWithLongFile() {
+    void testCompressionAndDecompressionWithLongFile() {
+        // This test works the same as the previous one, but we use a file
+        // with a lot of text so that we achieve a good compression ratio and are not
+        // required to force compression.
+
         deleteFileIfExists(LONG_COMPRESSED_TEST_FILE);
         deleteFileIfExists(LONG_UNCOMPRESSED_TEST_FILE);
 
@@ -221,9 +229,10 @@ class HuffTest {
         Huff h = getTestHuff();
 
         try {
-            int actualUncompressedSize = h.uncompress(FAKE_COMPRESSED_TEST_FILE, UNCOMPRESSED_TEST_FILE);
+            // This file was not compressed with our algorithm so should not be able to be uncompressed successfully
+            h.uncompress(FAKE_COMPRESSED_TEST_FILE, UNCOMPRESSED_TEST_FILE);
 
-            // If we reach this, something went wrong
+            // If we reach this, that means we were able to uncompress the file, which is not correct.
             fail("You should not be able to uncompress this file");
         } catch (RuntimeException e) {
             String message = e.getMessage();
