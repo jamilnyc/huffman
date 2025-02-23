@@ -1,0 +1,106 @@
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/*
+O(1)
+O(logN)
+O(N)
+O(N * logN)
+O(N^2)
+
+*/
+
+public static boolean hasTriples(List<String> one, List<String> two, List<String> three) {
+    // Convert the 'three' list into a HashSet for O(1) lookups
+    // 1 * N = O(N)
+    Set<String> threeSet = new HashSet<>(three);
+
+    // Convert 'two' into a HashSet for O(1) lookups
+    // 1 * N = O(N)
+    Set<String> twoSet = new HashSet<>(two);
+
+    // Iterate through 'one' and check conditions
+    for (String s1 : one) {
+        // Check if 's1' exists in 'twoSet' and 'threeSet'
+        if (twoSet.contains(s1) && threeSet.contains(s1)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+public static boolean hasTriples2(List<String> one, List<String> two, List<String> three) {
+    
+    Map<String,String> map3 = new HashMap<String,String>(three.size());
+    // O(N * logN)
+    for (String i : three) {
+        // O(logN)
+        map3.put(i, i);
+    }
+
+    Map<String,String> map2 = new HashMap<String,String>(two.size());
+    // O(N * logN)
+    for (String i : two) {
+        map2.put(i, i);
+    }
+
+    // O(N * 1)
+    for (String s : one) {
+        // O(1)
+        if (map3.contains(s) && map2.contains(s)) {
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+
+// 100 200 10 15 75 80 20 30 40
+// ^           
+// k = 3
+// Output: 100, 200, 80
+public static <T extends Comparable<T>> List<T> topK(int k, Iterator<T> iter) {
+    // O(k) space
+    List<T> output = new ArrayList<>();
+    for (int i = 0; i < k && iter.hasNext(); i++) {
+        output.add(iter.next());
+    }
+    // output.size() = k
+
+
+    while (iter.hasNext()) {
+        // O(1) space
+        T current = iter.next();
+
+        // Find smallest element in output ArrayList
+        T smallest = output.get(0);
+        int smallestIndex = 0;
+        for (int i = 1; i < output.size(); i++) {
+            if (output.get(i) < smallest) {
+                smallest = output.get(i);
+                smallestIndex = i;
+            }
+        }
+
+        // If our current element from the Iterator is bigger
+        // than the smallest element in output, replace it in
+        // the output ArrayList
+        if (smallest < current) {
+            output[smallestIndex] = current;
+        }
+
+    }
+
+    Collections.sort(output);
+    Collections.reverse(output);
+
+    //O(K+1) -> O(K)
+
+    return output;
+
+
+}
