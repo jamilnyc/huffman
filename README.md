@@ -15,3 +15,7 @@ They can probably be adapted for JUnit v4, with a little tweaking of the `import
 The text of the `long-original.test.txt` was generated with [lipsum.com](https://www.lipsum.com/).
 
 A code coverage HTML report is available in `code-coverage-report/`.
+
+Many tests use `teststring` to assert the functionality. A breakdown of one potential Huffman tree for `teststring` can be seen below:
+
+![Huffman Tree for teststring](./img/teststring_tree_diagram.png)
