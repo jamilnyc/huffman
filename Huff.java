@@ -135,12 +135,7 @@ public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
 
     @Override
     public int write(String inFile, String outFile, boolean force) {
-        // We need two input streams for the file
-        // One stream reads through the whole file to make the HuffTree
-        // The other input stream is used to read one character at a time and encode it
-
         BitInputStream treeStream = new BitInputStream(inFile);
-        BitInputStream inputStream = new BitInputStream(inFile);
 
         try {
             makeHuffTree(treeStream);
@@ -171,9 +166,12 @@ public class Huff implements ITreeMaker, IHuffEncoder, IHuffModel, IHuffHeader
         if ((compressedSize >= originalSize) && !force) {
             // If compression actually doesn't save space, and we are not forcing
             // there is nothing else to do.
-            inputStream.close();
             return compressedSize;
         }
+
+        // Create a new input stream so we can read characters from the beginning
+        // Previous input stream was used up calculating the size
+        BitInputStream inputStream = new BitInputStream(inFile);
 
         // Start writing to the compressed file, with the header
         BitOutputStream out = new BitOutputStream(outFile);
