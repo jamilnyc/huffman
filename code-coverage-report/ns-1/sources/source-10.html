@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > ITreeMaker</title>
+  <title>Coverage Report > IHuffEncoder</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">&lt;empty package name&gt;</a>
 </div>
 
-<h1>Coverage Summary for Class: ITreeMaker (&lt;empty package name&gt;)</h1>
+<h1>Coverage Summary for Class: IHuffEncoder (&lt;empty package name&gt;)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">ITreeMaker</td>
+  <td class="name">IHuffEncoder</td>
 </tr>
 
 </table>
@@ -39,29 +39,40 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;import java.io.IOException;
-&nbsp;import java.io.InputStream;
+<code class="sourceCode" id="sourceCode">&nbsp;import java.util.Map;
 &nbsp;
 &nbsp;/**
-&nbsp; * Abstraction/interface to allow trees to be made in more
-&nbsp; * than one setting, and to export the treemaker as an object.
-&nbsp; * For example, a tree can be made from character-counts using
-&nbsp; * a priority queue. Alternatively, a tree could be made from
-&nbsp; * an input stream when unhuffing if the huff process stored the
-&nbsp; * tree in the file in some format.
+&nbsp; * Interface for creating a table of codings from a tree.
+&nbsp; * Client passes an ITreeMaker to the makeTable method, which
+&nbsp; * initializes state so that subsequent calls on getCode will
+&nbsp; * return the &quot;010111010&quot; huffman coding for a particular &quot;character&quot;.
 &nbsp; * &lt;P&gt;
-&nbsp; * Typically classes that implement this interface will supply
-&nbsp; * state to the class via a constuctor or some other method so
-&nbsp; * that makeRoot will work (since makeRoot has no parameters).
-&nbsp; *
+&nbsp; * Note that int values should be used for every chunk/character.
+&nbsp; * &lt;P&gt;
 &nbsp; * @author Owen Astrachan, Eric Fouh
+&nbsp; *
 &nbsp; */
-&nbsp;public interface ITreeMaker {
+&nbsp;public interface IHuffEncoder {
 &nbsp;    /**
-&nbsp;     * Return the  Huffman/coding tree.
-&nbsp;     * @return the Huffman tree
+&nbsp;     * Initialize state from a tree, the tree is obtained
+&nbsp;     * from the treeMaker.
+&nbsp;     * @return the map of chars/encoding
 &nbsp;     */
-&nbsp;    public HuffTree makeHuffTree(InputStream stream) throws IOException;
+&nbsp;    public Map&lt;Integer, String&gt; makeTable();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Returns coding, e.g., &quot;010111&quot; for specified chunk/character. It
+&nbsp;     * is an error to call this method before makeTable has been
+&nbsp;     * called.
+&nbsp;     * @param i is the chunk for which the coding is returned
+&nbsp;     * @return the huff encoding for the specified chunk
+&nbsp;     */
+&nbsp;    public String getCode(int i);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * @return a map of all characters and their frequency
+&nbsp;     */
+&nbsp;    public Map&lt;Integer, Integer&gt; showCounts();
 &nbsp;}
 </code>
 </pre>
@@ -86,7 +97,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-23 11:26</div>
+    <div style="float:right;">generated on 2025-03-08 15:47</div>
 </div>
 </body>
 </html>

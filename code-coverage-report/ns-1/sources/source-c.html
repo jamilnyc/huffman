@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > ICharCounter</title>
+  <title>Coverage Report > IHuffModel</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">&lt;empty package name&gt;</a>
 </div>
 
-<h1>Coverage Summary for Class: ICharCounter (&lt;empty package name&gt;)</h1>
+<h1>Coverage Summary for Class: IHuffModel (&lt;empty package name&gt;)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">ICharCounter</td>
+  <td class="name">IHuffModel</td>
 </tr>
 
 </table>
@@ -39,58 +39,51 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;
-&nbsp;
-&nbsp;
+<code class="sourceCode" id="sourceCode">&nbsp;import java.io.InputStream;
+&nbsp;import java.io.OutputStream;
+&nbsp;import java.util.Map;
+&nbsp;import java.io.File;
 &nbsp;/**
-&nbsp; * An interface for initializing and retrieving chunk/character
-&nbsp; * counts. 
-&nbsp; * @author Owen Astrachan
+&nbsp; * The interface for the model that can be attached to a HuffmanView. Most of
+&nbsp; * the work done in huffing (and unhuffing) will be via a class that implements
+&nbsp; * this interface. The interface may need to be extended depending on the design
+&nbsp; * of the huffman program.
+&nbsp; * &lt;P&gt;
+&nbsp; * 
+&nbsp; * @author Owen Astrachan, Eric Fouh
 &nbsp; */
 &nbsp;
-&nbsp;import java.io.InputStream;
-&nbsp;import java.util.Map;
-&nbsp;import java.io.IOException;
-&nbsp;public interface ICharCounter {
+&nbsp;
+&nbsp;
+&nbsp;public interface IHuffModel
+&nbsp;    extends IHuffConstants
+&nbsp;{
 &nbsp;    
+&nbsp;
 &nbsp;    /**
-&nbsp;     * Returns the count associated with specified character.
-&nbsp;     * @param ch is the chunk/character for which count is requested
-&nbsp;     * @return count of specified chunk
-&nbsp;     * @throws the appropriate exception if ch isn&#39;t a valid chunk/character
+&nbsp;     * Write a compressed version of the data read by the InputStream parameter,
+&nbsp;     * -- if the stream is not the same as the stream last passed to initialize,
+&nbsp;     * then compression won&#39;t be optimal, but will still work. If force is
+&nbsp;     * false, compression only occurs if it saves space. If force is true
+&nbsp;     * compression results even if no bits are saved.
+&nbsp;     * 
+&nbsp;     * @param inFile is the input stream to be compressed
+&nbsp;     * @param outFile   specifies the OutputStream/file to be written with compressed data
+&nbsp;     * @param force  indicates if compression forced
+&nbsp;     * @return the size of the compressed file
 &nbsp;     */
-&nbsp;    public int getCount(int ch);
-&nbsp;    
+&nbsp;    public int write(String inFile, String outFile, boolean force);
+&nbsp;
+&nbsp;
 &nbsp;    /**
-&nbsp;     * Initialize state by counting bits/chunks in a stream
-&nbsp;     * @param stream is source of data
-&nbsp;     * @return count of all chunks/read
-&nbsp;     * @throws IOException if reading fails
+&nbsp;     * Uncompress a previously compressed file.
+&nbsp;     * 
+&nbsp;     * @param inFile  is the compressed file to be uncompressed
+&nbsp;     * @param outFile is where the uncompressed bits will be written
+&nbsp;     * @return the size of the uncompressed file
 &nbsp;     */
-&nbsp;    public int countAll(InputStream stream) throws IOException;
-&nbsp;    
-&nbsp;    /**
-&nbsp;     * Update state to record one occurrence of specified chunk/character.
-&nbsp;     * @param i is the chunk being recorded
-&nbsp;     */
-&nbsp;    public void add(int i);
-&nbsp;    
-&nbsp;    /**
-&nbsp;     * Set the value/count associated with a specific character/chunk.
-&nbsp;     * @param i is the chunk/character whose count is specified
-&nbsp;     * @param value is # occurrences of specified chunk
-&nbsp;     */
-&nbsp;    public void set(int i, int value);
-&nbsp;    
-&nbsp;    /**
-&nbsp;     * All counts cleared to zero.
-&nbsp;     */
-&nbsp;    public void clear();
-&nbsp;    
-&nbsp;    /**
-&nbsp;     * @return a map of all characters and their frequency
-&nbsp;     */
-&nbsp;    public Map&lt;Integer, Integer&gt; getTable();
+&nbsp;    public int uncompress(String inFile, String outFile);
+&nbsp;
 &nbsp;}
 </code>
 </pre>
@@ -115,7 +108,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-23 11:26</div>
+    <div style="float:right;">generated on 2025-03-08 15:47</div>
 </div>
 </body>
 </html>

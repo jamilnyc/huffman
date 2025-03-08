@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > IHuffHeader</title>
+  <title>Coverage Report > ICharCounter</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">&lt;empty package name&gt;</a>
 </div>
 
-<h1>Coverage Summary for Class: IHuffHeader (&lt;empty package name&gt;)</h1>
+<h1>Coverage Summary for Class: ICharCounter (&lt;empty package name&gt;)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">IHuffHeader</td>
+  <td class="name">ICharCounter</td>
 </tr>
 
 </table>
@@ -41,54 +41,56 @@ Current scope:     <a href="../../index.html">all classes</a>
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;
 &nbsp;
-&nbsp;/**
-&nbsp; * Encapsulate reading/writing a header of a compressed file in Huffman coding.
-&nbsp; * Clients should ensure that reading/writing the header in the same way
-&nbsp; * are encapsulated appropriately. For example, the simplest approach
-&nbsp; * to implementing this interface is likely storing 256 int values (or, more
-&nbsp; * generally ALPH_SIZE values) in the compressed file, where the i-th
-&nbsp; * int value represents the number of occurrences of the i-th character,
-&nbsp; * e.g., for ASCII 65 represents &#39;A&#39; so the 66-th value written would be
-&nbsp; * the number of ocurrences of &#39;A&#39; in a text file. In general, since binary
-&nbsp; * files can be compressed, the i-th value written is the number of occurrences
-&nbsp; * of the int i in the data, where 0 &lt;= i &lt; ALPH_SIZE.
-&nbsp; * &lt;P&gt;
-&nbsp; * In this simple scenario, an object would be intialized/constructed from
-&nbsp; * a source of counts, the counts would e written along with a magic number
-&nbsp; * from &lt;code&gt;writeHeader&lt;code&gt; and the magic number and counts would be
-&nbsp; * read from&lt;code&gt;readHeader&lt;/code&gt;.
-&nbsp; * &lt;P&gt;
-&nbsp; * @author Owen Astrachan
-&nbsp; *
-&nbsp; */
-&nbsp;import java.io.IOException;
 &nbsp;
-&nbsp;public interface IHuffHeader extends IHuffConstants {
+&nbsp;/**
+&nbsp; * An interface for initializing and retrieving chunk/character
+&nbsp; * counts. 
+&nbsp; * @author Owen Astrachan
+&nbsp; */
+&nbsp;
+&nbsp;import java.io.InputStream;
+&nbsp;import java.util.Map;
+&nbsp;import java.io.IOException;
+&nbsp;public interface ICharCounter {
 &nbsp;    
 &nbsp;    /**
-&nbsp;     * The number of bits in the header using the implementation, including
-&nbsp;     * the magic number presumably stored.
-&nbsp;     * @return the number of bits in the header
+&nbsp;     * Returns the count associated with specified character.
+&nbsp;     * @param ch is the chunk/character for which count is requested
+&nbsp;     * @return count of specified chunk
+&nbsp;     * @throws the appropriate exception if ch isn&#39;t a valid chunk/character
 &nbsp;     */
-&nbsp;    public int headerSize();
+&nbsp;    public int getCount(int ch);
 &nbsp;    
 &nbsp;    /**
-&nbsp;     * Write the header, including magic number and all bits needed to
-&nbsp;     * reconstruct a tree, e.g., using &lt;code&gt;readHeader&lt;/code&gt;.
-&nbsp;     * @param out is where the header is written
-&nbsp;     * @return the size of the header
+&nbsp;     * Initialize state by counting bits/chunks in a stream
+&nbsp;     * @param stream is source of data
+&nbsp;     * @return count of all chunks/read
+&nbsp;     * @throws IOException if reading fails
 &nbsp;     */
-&nbsp;    public int writeHeader(BitOutputStream out);
+&nbsp;    public int countAll(InputStream stream) throws IOException;
 &nbsp;    
 &nbsp;    /**
-&nbsp;     * Read the header and return an ITreeMaker object corresponding to
-&nbsp;     * the information/header read.
-&nbsp;     * @param in is source of bits for header
-&nbsp;     * @return an ITreeMaker object representing the tree stored in the header
-&nbsp;     * @throws IOException if the header is bad, e.g., wrong MAGIC_NUMBER, wrong
-&nbsp;     * number of bits, I/O error occurs reading
+&nbsp;     * Update state to record one occurrence of specified chunk/character.
+&nbsp;     * @param i is the chunk being recorded
 &nbsp;     */
-&nbsp;    public HuffTree readHeader(BitInputStream in) throws IOException;
+&nbsp;    public void add(int i);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Set the value/count associated with a specific character/chunk.
+&nbsp;     * @param i is the chunk/character whose count is specified
+&nbsp;     * @param value is # occurrences of specified chunk
+&nbsp;     */
+&nbsp;    public void set(int i, int value);
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * All counts cleared to zero.
+&nbsp;     */
+&nbsp;    public void clear();
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * @return a map of all characters and their frequency
+&nbsp;     */
+&nbsp;    public Map&lt;Integer, Integer&gt; getTable();
 &nbsp;}
 </code>
 </pre>
@@ -113,7 +115,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-23 11:26</div>
+    <div style="float:right;">generated on 2025-03-08 15:47</div>
 </div>
 </body>
 </html>

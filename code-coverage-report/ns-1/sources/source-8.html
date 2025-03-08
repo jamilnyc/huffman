@@ -72,10 +72,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 </td>
 <td class="coverageStat">
   <span class="percent">
-    92.8%
+    92.9%
   </span>
   <span class="absValue">
-    (90/97)
+    (92/99)
   </span>
 </td>
 </tr>
@@ -110,6 +110,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    public static final String TEST_STRING = &quot;teststring&quot;;
 &nbsp;
+&nbsp;    /**
+&nbsp;     * Helper method for creating the initial HuffTree and making basic assertions on its properties.
+&nbsp;     * Uses the TEST_STRING constant as the input stream.
+&nbsp;     *
+&nbsp;     * @return Huff object that is initialized with a valid HuffTree and Frequency counts
+&nbsp;     */
 &nbsp;    private Huff getTestHuff() {
 <b class="fc">&nbsp;        InputStream ins = new ByteArrayInputStream(TEST_STRING.getBytes());</b>
 <b class="fc">&nbsp;        Huff h = new Huff();</b>
@@ -293,6 +299,9 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 <b class="pc">&nbsp;        assertTrue(actualCompressedSize &lt; originalFileSize, &quot;Compression did not save space&quot;);</b>
 &nbsp;
+<b class="fc">&nbsp;        File compressedFile = new File(LONG_COMPRESSED_TEST_FILE);</b>
+<b class="fc">&nbsp;        assertTrue(compressedFile.exists(), &quot;Compressed file did not exist&quot;);</b>
+&nbsp;
 <b class="fc">&nbsp;        int actualUncompressedSize = h.uncompress(LONG_COMPRESSED_TEST_FILE, LONG_UNCOMPRESSED_TEST_FILE);</b>
 <b class="fc">&nbsp;        File uncompressedFile = new File(LONG_UNCOMPRESSED_TEST_FILE);</b>
 <b class="fc">&nbsp;        assertTrue(uncompressedFile.exists(), &quot;Uncompressed file did not exist&quot;);</b>
@@ -355,7 +364,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-23 11:26</div>
+    <div style="float:right;">generated on 2025-03-08 15:47</div>
 </div>
 </body>
 </html>

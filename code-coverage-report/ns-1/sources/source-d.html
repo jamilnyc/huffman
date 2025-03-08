@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > IHuffConstants</title>
+  <title>Coverage Report > IHuffBaseNode</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">&lt;empty package name&gt;</a>
 </div>
 
-<h1>Coverage Summary for Class: IHuffConstants (&lt;empty package name&gt;)</h1>
+<h1>Coverage Summary for Class: IHuffBaseNode (&lt;empty package name&gt;)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">IHuffConstants</td>
+  <td class="name">IHuffBaseNode</td>
 </tr>
 
 </table>
@@ -40,44 +40,32 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <pre>
 <code class="sourceCode" id="sourceCode">&nbsp;
+&nbsp;// -------------------------------------------------------------------------
 &nbsp;/**
-&nbsp; * Global constants used in Huff/Unhuff. Clients needing these
-&nbsp; * values should implement this interface or access the
-&nbsp; * values directly, e.g., as &lt;code&gt;IHuffConstants.BITS_PER_WORD&lt;/code&gt;. However,
-&nbsp; * implementing the interface is preferred in which case
-&nbsp; * the values can be accessed simply as &lt;code&gt;BITS_PER_WORD&lt;/code&gt;, for example.
-&nbsp; * &lt;P&gt;
-&nbsp; * @author Owen Astrachan
+&nbsp; * Write a one-sentence summary of your class here. Follow it with additional
+&nbsp; * details about its purpose, what abstraction it represents, and how to use it.
+&nbsp; *
+&nbsp; * @author ericfouh
+&nbsp; * @version Mar 16, 2016
 &nbsp; */
-&nbsp;public interface IHuffConstants {
+&nbsp;public interface IHuffBaseNode extends Comparable
+&nbsp;{
+&nbsp;    // ----------------------------------------------------------
 &nbsp;    /**
-&nbsp;     * The standard number of bits per chunk/word when huffing.
+&nbsp;     * Place a description of your method here.
+&nbsp;     *
+&nbsp;     * @return
 &nbsp;     */
-&nbsp;    public static final int BITS_PER_WORD = 8;
-&nbsp;    
+&nbsp;    public boolean isLeaf();
+&nbsp;
+&nbsp;
+&nbsp;    // ----------------------------------------------------------
 &nbsp;    /**
-&nbsp;     * The size of the alphabet given the number of bits per chunk, this
-&nbsp;     * should be 2^BITS_PER_WORD.
+&nbsp;     * Place a description of your method here.
+&nbsp;     *
+&nbsp;     * @return
 &nbsp;     */
-&nbsp;    public static final int ALPH_SIZE = (1 &lt;&lt; BITS_PER_WORD);
-&nbsp;    
-&nbsp;    /**
-&nbsp;     * The standard number of bits needed to represent/store
-&nbsp;     * an int, this is 32 in Java and nearly all other languages.
-&nbsp;     */
-&nbsp;    public static final int BITS_PER_INT = 32;
-&nbsp;    
-&nbsp;    /**
-&nbsp;     * The value of the PSEUDO_EOF character. This is one-more
-&nbsp;     * than the maximum value of a legal BITS_PER_WORD-bit character.
-&nbsp;     */
-&nbsp;    
-&nbsp;    public static final int PSEUDO_EOF = ALPH_SIZE;
-&nbsp;    
-&nbsp;    /**
-&nbsp;     * Isolate the magic number in one place.
-&nbsp;     */
-&nbsp;    public static final int MAGIC_NUMBER = 1234567873;
+&nbsp;    public int weight();
 &nbsp;}
 </code>
 </pre>
@@ -102,7 +90,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-23 11:26</div>
+    <div style="float:right;">generated on 2025-03-08 15:47</div>
 </div>
 </body>
 </html>

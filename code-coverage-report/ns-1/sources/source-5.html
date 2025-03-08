@@ -110,6 +110,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;        return characterEncodings;</b>
 &nbsp;    }
 &nbsp;
+&nbsp;    /**
+&nbsp;     * Recursively populate the characterEncodings map, by traversing the HuffTree with pre-order traversal.
+&nbsp;     *
+&nbsp;     * @param characterEncodings Map of character encodings to populate. Key is the character, value is the encoding in 0&#39;s and 1&#39;s
+&nbsp;     * @param root The root node of the HuffTree to start traversing from
+&nbsp;     * @param encoding The encoding string that is built one bit at a time as we traverse the tree. Should be empty string to start.
+&nbsp;     */
 &nbsp;    private void makeCode(Map&lt;Integer, String&gt; characterEncodings, IHuffBaseNode root, String encoding) {
 <b class="pc">&nbsp;        if (root == null) {</b>
 <b class="nc">&nbsp;            throw new NullPointerException(&quot;Null root node&quot;);</b>
@@ -148,6 +155,13 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;        return BITS_PER_INT + writeHelper(out, huffTree.root());</b>
 &nbsp;    }
 &nbsp;
+&nbsp;    /**
+&nbsp;     * Recursively write the entire HuffTree as part of the compressed file&#39;s header.
+&nbsp;     *
+&nbsp;     * @param out BitOutputStream that represents the file we are writing the header to
+&nbsp;     * @param root The root node of the HuffTree
+&nbsp;     * @return The number of bits written for the HuffTree, to be included in the total header size
+&nbsp;     */
 &nbsp;    private int writeHelper(BitOutputStream out, IHuffBaseNode root) {
 <b class="fc">&nbsp;        if (root.isLeaf()) {</b>
 &nbsp;            // For leaf nodes, we write a 1, followed by the ASCII value
@@ -210,12 +224,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;
 &nbsp;    @Override
 &nbsp;    public int write(String inFile, String outFile, boolean force) {
-&nbsp;        // We need two input streams for the file
-&nbsp;        // One stream reads through the whole file to make the HuffTree
-&nbsp;        // The other input stream is used to read one character at a time and encode it
-&nbsp;
 <b class="fc">&nbsp;        BitInputStream treeStream = new BitInputStream(inFile);</b>
-<b class="fc">&nbsp;        BitInputStream inputStream = new BitInputStream(inFile);</b>
 &nbsp;
 &nbsp;        try {
 <b class="fc">&nbsp;            makeHuffTree(treeStream);</b>
@@ -246,9 +255,12 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;        if ((compressedSize &gt;= originalSize) &amp;&amp; !force) {</b>
 &nbsp;            // If compression actually doesn&#39;t save space, and we are not forcing
 &nbsp;            // there is nothing else to do.
-&nbsp;            inputStream.close();
 <b class="fc">&nbsp;            return compressedSize;</b>
 &nbsp;        }
+&nbsp;
+&nbsp;        // Create a new input stream so we can read characters from the beginning
+&nbsp;        // Previous input stream was used up calculating the size
+<b class="fc">&nbsp;        BitInputStream inputStream = new BitInputStream(inFile);</b>
 &nbsp;
 &nbsp;        // Start writing to the compressed file, with the header
 <b class="fc">&nbsp;        BitOutputStream out = new BitOutputStream(outFile);</b>
@@ -271,9 +283,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 &nbsp;            // Parse the encoding as binary 0&#39;s and 1&#39;s into a regular decimal integer
 <b class="fc">&nbsp;            int encodingAsInteger = Integer.parseInt(encoding, 2);</b>
 <b class="fc">&nbsp;            out.write(encoding.length(), encodingAsInteger);</b>
-&nbsp;            //compressedSize += encoding.length();
 &nbsp;        }
 &nbsp;
+&nbsp;        // Add the PSEUDO_EOF to the end of the compressed file, which we will use
+&nbsp;        // to know when to stop decompressing.
 <b class="fc">&nbsp;        String pseudoEofEncoding = characterEncodings.get(PSEUDO_EOF);</b>
 <b class="fc">&nbsp;        int pseudoEofEncodingAsInteger = Integer.parseInt(pseudoEofEncoding, 2);</b>
 <b class="fc">&nbsp;        out.write(pseudoEofEncoding.length(), pseudoEofEncodingAsInteger);</b>
@@ -354,6 +367,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;        cc.countAll(stream);</b>
 <b class="fc">&nbsp;        characterFrequency = cc.getTable();</b>
 &nbsp;
+&nbsp;        // Normally we should use a PriorityQueue&lt;IHuffBaseNode&gt;, but there
+&nbsp;        // is a bug in the two node classes in how they implement the compareTo() method.
+&nbsp;        // Specifically they are only able to compareTo other instances of their own class.
+&nbsp;        // The HuffTree class has a more robust compareTo() method.
 <b class="fc">&nbsp;        PriorityQueue&lt;HuffTree&gt; queue = new PriorityQueue&lt;&gt;();</b>
 <b class="fc">&nbsp;        for (Map.Entry&lt;Integer, Integer&gt; entry : characterFrequency.entrySet()) {</b>
 <b class="fc">&nbsp;            Integer character = entry.getKey();</b>
@@ -363,7 +380,10 @@ Current scope:     <a href="../../index.html">all classes</a>
 <b class="fc">&nbsp;            queue.add(t);</b>
 &nbsp;        }
 &nbsp;
-&nbsp;        // Add one more leaf for the PSEUDO_EOF
+&nbsp;        // Add one more leaf for the PSEUDO_EOF with a weight of 1
+&nbsp;        // per the specification.
+&nbsp;        // This will give the PSEUDO_EOF a unique encoding that will be
+&nbsp;        // used when we write the compressed file.
 <b class="fc">&nbsp;        queue.add(new HuffTree(PSEUDO_EOF, 1));</b>
 &nbsp;
 <b class="fc">&nbsp;        HuffTree tempTree = null;</b>
@@ -405,7 +425,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-23 11:26</div>
+    <div style="float:right;">generated on 2025-03-08 15:47</div>
 </div>
 </body>
 </html>

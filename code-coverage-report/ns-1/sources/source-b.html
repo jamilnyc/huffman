@@ -5,7 +5,7 @@
 <html id="htmlId">
 <head>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-  <title>Coverage Report > IHuffModel</title>
+  <title>Coverage Report > IHuffConstants</title>
   <style type="text/css">
     @import "../../css/coverage.css";
     @import "../../css/idea.min.css";
@@ -22,14 +22,14 @@ Current scope:     <a href="../../index.html">all classes</a>
     <a href="../index.html">&lt;empty package name&gt;</a>
 </div>
 
-<h1>Coverage Summary for Class: IHuffModel (&lt;empty package name&gt;)</h1>
+<h1>Coverage Summary for Class: IHuffConstants (&lt;empty package name&gt;)</h1>
 
 <table class="coverageStats">
 <tr>
   <th class="name">Class</th>
 </tr>
 <tr>
-  <td class="name">IHuffModel</td>
+  <td class="name">IHuffConstants</td>
 </tr>
 
 </table>
@@ -39,51 +39,45 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 
 <pre>
-<code class="sourceCode" id="sourceCode">&nbsp;import java.io.InputStream;
-&nbsp;import java.io.OutputStream;
-&nbsp;import java.util.Map;
-&nbsp;import java.io.File;
+<code class="sourceCode" id="sourceCode">&nbsp;
 &nbsp;/**
-&nbsp; * The interface for the model that can be attached to a HuffmanView. Most of
-&nbsp; * the work done in huffing (and unhuffing) will be via a class that implements
-&nbsp; * this interface. The interface may need to be extended depending on the design
-&nbsp; * of the huffman program.
+&nbsp; * Global constants used in Huff/Unhuff. Clients needing these
+&nbsp; * values should implement this interface or access the
+&nbsp; * values directly, e.g., as &lt;code&gt;IHuffConstants.BITS_PER_WORD&lt;/code&gt;. However,
+&nbsp; * implementing the interface is preferred in which case
+&nbsp; * the values can be accessed simply as &lt;code&gt;BITS_PER_WORD&lt;/code&gt;, for example.
 &nbsp; * &lt;P&gt;
-&nbsp; * 
-&nbsp; * @author Owen Astrachan, Eric Fouh
+&nbsp; * @author Owen Astrachan
 &nbsp; */
-&nbsp;
-&nbsp;
-&nbsp;
-&nbsp;public interface IHuffModel
-&nbsp;    extends IHuffConstants
-&nbsp;{
+&nbsp;public interface IHuffConstants {
+&nbsp;    /**
+&nbsp;     * The standard number of bits per chunk/word when huffing.
+&nbsp;     */
+&nbsp;    public static final int BITS_PER_WORD = 8;
 &nbsp;    
-&nbsp;
 &nbsp;    /**
-&nbsp;     * Write a compressed version of the data read by the InputStream parameter,
-&nbsp;     * -- if the stream is not the same as the stream last passed to initialize,
-&nbsp;     * then compression won&#39;t be optimal, but will still work. If force is
-&nbsp;     * false, compression only occurs if it saves space. If force is true
-&nbsp;     * compression results even if no bits are saved.
-&nbsp;     * 
-&nbsp;     * @param inFile is the input stream to be compressed
-&nbsp;     * @param outFile   specifies the OutputStream/file to be written with compressed data
-&nbsp;     * @param force  indicates if compression forced
-&nbsp;     * @return the size of the compressed file
+&nbsp;     * The size of the alphabet given the number of bits per chunk, this
+&nbsp;     * should be 2^BITS_PER_WORD.
 &nbsp;     */
-&nbsp;    public int write(String inFile, String outFile, boolean force);
-&nbsp;
-&nbsp;
+&nbsp;    public static final int ALPH_SIZE = (1 &lt;&lt; BITS_PER_WORD);
+&nbsp;    
 &nbsp;    /**
-&nbsp;     * Uncompress a previously compressed file.
-&nbsp;     * 
-&nbsp;     * @param inFile  is the compressed file to be uncompressed
-&nbsp;     * @param outFile is where the uncompressed bits will be written
-&nbsp;     * @return the size of the uncompressed file
+&nbsp;     * The standard number of bits needed to represent/store
+&nbsp;     * an int, this is 32 in Java and nearly all other languages.
 &nbsp;     */
-&nbsp;    public int uncompress(String inFile, String outFile);
-&nbsp;
+&nbsp;    public static final int BITS_PER_INT = 32;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * The value of the PSEUDO_EOF character. This is one-more
+&nbsp;     * than the maximum value of a legal BITS_PER_WORD-bit character.
+&nbsp;     */
+&nbsp;    
+&nbsp;    public static final int PSEUDO_EOF = ALPH_SIZE;
+&nbsp;    
+&nbsp;    /**
+&nbsp;     * Isolate the magic number in one place.
+&nbsp;     */
+&nbsp;    public static final int MAGIC_NUMBER = 1234567873;
 &nbsp;}
 </code>
 </pre>
@@ -108,7 +102,7 @@ Current scope:     <a href="../../index.html">all classes</a>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2025-02-23 11:26</div>
+    <div style="float:right;">generated on 2025-03-08 15:47</div>
 </div>
 </body>
 </html>
